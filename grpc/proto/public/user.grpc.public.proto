@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+// all proto files should put to one repository and import generated files
+// https://developers.google.com/protocol-buffers/docs/reference/go/faq#namespace-conflict
+
+package userpublic;
+option go_package = "pu/grpc/proto/public;userpublic";
+
+service GRPCPublic {
+  rpc CreateUser(CreateUserRequest) returns (User) {};
+  rpc AuthUser(AuthUserRequest) returns (User) {};
+  rpc GetUser(GetUserRequest) returns (User) {};
+}
+
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+  string password = 3;
+}
+
+message User {
+  int64 id = 1;
+  string name = 2;
+  string email = 3;
+  int64 points = 4;
+}
+
+message AuthUserRequest {
+  string email = 1;
+  string encodedPassword = 2;
+}
+
+message GetUserRequest {
+  int64 id = 1;
+}

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+// all proto files should put to one repository and import generated files
+// https://developers.google.com/protocol-buffers/docs/reference/go/faq#namespace-conflict
+
+package userprivate;
+option go_package = "pu/grpc/proto/private;userprivate";
+
+service GRPCPrivate {
+  rpc GetUser(GetUserRequest) returns (User) {};
+}
+
+message User {
+  int64 id = 1;
+  string name = 2;
+  string email = 3;
+  int64 points = 4;
+}
+
+message GetUserRequest {
+  int64 id = 1;
+}

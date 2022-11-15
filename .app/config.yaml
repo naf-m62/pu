@@ -1,0 +1,28 @@
+logger:
+  level: debug
+  encoding: console
+  development: false
+  caller: true
+  stacktrace: error
+
+http:
+  addr: 127.0.0.1:3011
+
+grpc:
+  public:
+    addr: 127.0.0.1:3012
+  private:
+    addr: 127.0.0.1:3013
+
+postgres:
+  host: 127.0.0.1
+  port: 5432
+  username: postgres
+  password: postgres
+  database: user
+
+rabbit:
+  host: localhost
+  port: 5672
+  username: guest
+  password: guest
