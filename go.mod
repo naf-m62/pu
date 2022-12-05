@@ -13,6 +13,8 @@ require (
 	google.golang.org/protobuf v1.28.1
 )
 
+require github.com/jackc/puddle/v2 v2.0.0 // indirect
+
 require (
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect

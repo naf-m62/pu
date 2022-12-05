@@ -6,10 +6,9 @@ import (
 	"net/url"
 	"sync"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pkg/errors"
 	"go.uber.org/fx"
-	"go.uber.org/zap"
 
 	"pu/config"
 	"pu/logger"
@@ -17,11 +16,11 @@ import (
 
 type (
 	DB interface {
-		DB() *pgx.Conn
+		DB() *pgxpool.Pool
 	}
 	postgres struct {
 		lock *sync.RWMutex
-		conn *pgx.Conn
+		pool *pgxpool.Pool
 	}
 	pConf struct {
 		Host     string `mapstructure:"host"`
@@ -40,20 +39,18 @@ func New(lc fx.Lifecycle, config config.Config, l logger.Logger) (db DB, err err
 
 	p := &postgres{
 		lock: &sync.RWMutex{},
-		conn: nil,
+		pool: nil,
 	}
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			if p.conn, err = p.connect(ctx, getDsn(pCfg)); err != nil {
+			if p.pool, err = p.connect(ctx, getDsn(pCfg)); err != nil {
 				return err
 			}
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			if errD := p.DB().Close(ctx); errD != nil {
-				l.Error("can't close postgres", zap.Error(errD))
-			}
+			p.DB().Close()
 			return nil
 		},
 	})
@@ -61,22 +58,22 @@ func New(lc fx.Lifecycle, config config.Config, l logger.Logger) (db DB, err err
 	return p, nil
 }
 
-func (p *postgres) DB() *pgx.Conn {
+func (p *postgres) DB() *pgxpool.Pool {
 	p.lock.RLock()
 	defer p.lock.RUnlock()
-	return p.conn
+	return p.pool
 }
 
-func (p *postgres) connect(ctx context.Context, connString string) (conn *pgx.Conn, err error) {
-	if conn, err = pgx.Connect(ctx, connString); err != nil {
+func (p *postgres) connect(ctx context.Context, connString string) (pool *pgxpool.Pool, err error) {
+	if pool, err = pgxpool.New(ctx, connString); err != nil {
 		return nil, errors.Wrap(err, "can't create conn")
 	}
 
-	if err = conn.Ping(ctx); err != nil {
+	if err = pool.Ping(ctx); err != nil {
 		return nil, errors.Wrap(err, "can't ping")
 	}
 
-	return conn, nil
+	return pool, nil
 }
 
 func getDsn(pCfg *pConf) string {
