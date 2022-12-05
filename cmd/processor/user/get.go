@@ -15,7 +15,7 @@ func (p *Processor) Get(ctx context.Context, id int64) (ru *domain.User, err err
 
 	if ru, err = p.userRepo.Get(ctx, id); err != nil {
 		l.Error("can't get user", zap.Error(err))
-		return nil, procerrors.ErrDBRequest
+		return nil, procerrors.GetError(err, procerrors.ErrDBRequest)
 	}
 	return ru, nil
 }

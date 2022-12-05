@@ -4,7 +4,10 @@ import (
 	"context"
 	"time"
 
+	"github.com/jackc/pgx/v5"
+
 	"pu/cmd/database/entities"
+	procerrors "pu/cmd/processor/errors"
 	"pu/cmd/processor/user/domain"
 	"pu/postgres"
 )
@@ -43,6 +46,9 @@ func (u *UserRepo) Get(ctx context.Context, userId int64) (user *domain.User, er
 	err = u.db.DB().QueryRow(ctx, `
 SELECT id, name, email, points, password_hash, salt FROM users WHERE id = $1
 `, userId).Scan(&uDB.ID, &uDB.Name, &uDB.Email, &uDB.Points, &uDB.PasswordHash, &uDB.Salt)
+	if err == pgx.ErrNoRows {
+		return nil, procerrors.ErrDBNotFound
+	}
 	return uDB.ConvertToUserProcessor(), err
 }
 
@@ -51,6 +57,9 @@ func (u *UserRepo) GetByEmail(ctx context.Context, email string) (user *domain.U
 	err = u.db.DB().QueryRow(ctx, `
 SELECT id, name, email, points, password_hash, salt FROM users WHERE email = $1
 `, email).Scan(&uDB.ID, &uDB.Name, &uDB.Email, &uDB.Points, &uDB.PasswordHash, &uDB.Salt)
+	if err == pgx.ErrNoRows {
+		return nil, procerrors.ErrDBNotFound
+	}
 	return uDB.ConvertToUserProcessor(), err
 }
 

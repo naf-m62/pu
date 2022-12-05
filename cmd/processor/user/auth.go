@@ -16,12 +16,12 @@ func (p *Processor) Auth(ctx context.Context, email, password string) (ru *domai
 
 	if ru, err = p.userRepo.GetByEmail(ctx, email); err != nil {
 		l.Error("can't get user by email", zap.Error(err))
-		return nil, procerrors.ErrDBRequest
+		return nil, procerrors.GetError(err, procerrors.ErrDBRequest)
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(ru.PasswordHash), []byte(ru.Salt+password+saltCode)); err != nil {
 		l.Error("incorrect login or password", zap.Error(err))
-		return nil, procerrors.ErrWrongLoginOrPass
+		return nil, procerrors.GetError(err, procerrors.ErrWrongLoginOrPass)
 	}
 	return ru, nil
 }

@@ -22,7 +22,7 @@ func (p *Processor) Create(ctx context.Context, u *domain.User, password string)
 	var passHash []byte
 	if passHash, err = bcrypt.GenerateFromPassword([]byte(customSalt+password+saltCode), bcrypt.DefaultCost); err != nil {
 		l.Error("can't generate password", zap.Error(err))
-		return nil, procerrors.ErrGeneratePassword
+		return nil, procerrors.GetError(err, procerrors.ErrGeneratePassword)
 	}
 
 	u.PasswordHash = string(passHash)
@@ -30,12 +30,12 @@ func (p *Processor) Create(ctx context.Context, u *domain.User, password string)
 
 	if ru, err = p.userRepo.Create(ctx, u); err != nil {
 		l.Error("can't create user", zap.Error(err))
-		return nil, procerrors.ErrDBRequest
+		return nil, procerrors.GetError(err, procerrors.ErrDBRequest)
 	}
 
 	if err = p.publisher.SendUserCreatedEvent(utils.GetTokenFromContext(ctx), ru); err != nil {
 		l.Error("can't send event", zap.Error(err))
-		return nil, procerrors.ErrPublishEvent
+		return nil, procerrors.GetError(err, procerrors.ErrPublishEvent)
 	}
 
 	return ru, nil

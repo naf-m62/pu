@@ -59,7 +59,6 @@ func runApp(_ *cobra.Command, _ []string) {
 			fx.Annotate(grpc.NewGrpcPrivateServer, fx.ResultTags(`name:"grpc_private_def"`)),
 			fx.Annotate(grpcprivate.NewGrpcPrivateServer, fx.ResultTags(`name:"grpc_private"`)),
 		),
-		// grpc/http clients
 
 		// watchers
 
