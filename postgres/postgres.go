@@ -11,7 +11,6 @@ import (
 	"go.uber.org/fx"
 
 	"pu/config"
-	"pu/logger"
 )
 
 type (
@@ -31,7 +30,7 @@ type (
 	}
 )
 
-func New(lc fx.Lifecycle, config config.Config, l logger.Logger) (db DB, err error) {
+func New(lc fx.Lifecycle, config config.Config) (db DB, err error) {
 	var pCfg *pConf
 	if err = config.UnmarshalKey("postgres", &pCfg); err != nil {
 		return nil, err

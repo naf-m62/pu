@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap/ctxzap"
+	"go.uber.org/zap"
 
 	"pu/logger"
 )
@@ -19,5 +20,6 @@ func GetTokenFromContext(ctx context.Context) string {
 }
 
 func GetLoggerFromContext(ctx context.Context) logger.Logger {
-	return ctxzap.Extract(ctx)
+	token := GetTokenFromContext(ctx)
+	return ctxzap.Extract(ctx).With(zap.String("token", token))
 }

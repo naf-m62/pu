@@ -26,3 +26,10 @@ rabbit:
   port: 5672
   username: guest
   password: guest
+
+minio:
+  endpoint: localhost:9000
+  bucket: user
+  location: id-west-1
+  accessKeyId: accesskey
+  secretAccessKey: secretkey

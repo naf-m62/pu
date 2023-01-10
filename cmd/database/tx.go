@@ -26,6 +26,7 @@ func (t *TxRepo) Do(ctx context.Context, fn func(tx pgx.Tx) error) (err error) {
 		if errR := tx.Rollback(ctx); errR != nil {
 			return err
 		}
+		return err
 	}
 	if errC := tx.Commit(ctx); errC != nil {
 		return errC
