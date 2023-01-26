@@ -15,5 +15,5 @@ func (h *Handler) HandlePing() http.HandlerFunc {
 func (h *Handler) ping(w http.ResponseWriter, r *http.Request) {
 	l := utils.GetLoggerFromContext(r.Context())
 	l.Info("ping request with token")
-	h.respond(w, http.StatusOK, []byte("PONG"))
+	h.respond(w, http.StatusOK, "PONG")
 }

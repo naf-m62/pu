@@ -39,7 +39,8 @@ func NewServer(
 		OnStart: func(ctx context.Context) error {
 			// list consumers
 			for _, item := range consumeList {
-				if err = r.Consume(&item); err != nil {
+				handler := item
+				if err = r.Consume(&handler); err != nil {
 					l.Error("can't start consume", zap.Error(err))
 					return err
 				}
